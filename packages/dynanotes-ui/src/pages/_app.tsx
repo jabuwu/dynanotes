@@ -1,3 +1,4 @@
+import '../../styles/style.css';
 import { ChakraProvider, ColorModeProvider } from '@chakra-ui/react';
 import { createClient, dedupExchange, fetchExchange, Provider } from 'urql';
 import { cacheExchange, Cache, QueryInput } from '@urql/exchange-graphcache';

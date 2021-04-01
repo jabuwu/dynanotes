@@ -1,0 +1,13 @@
+.note {
+  font-family: 'Courier New', Courier, monospace !important;
+  font-weight: bold !important;
+  height: 100% !important;
+}
+.flex1 {
+  flex: 1;
+  display: flex;
+}
+.createNoteButton {
+  font-size: 8vh !important;
+  height: 14vh !important;
+}

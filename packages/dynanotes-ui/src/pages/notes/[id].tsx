@@ -1,5 +1,6 @@
 import { useNoteQuery, useDeleteNoteMutation, useMeQuery } from '../../generated/graphql';
 import { useRouter } from 'next/router';
+import { Textarea, Flex } from '@chakra-ui/react';
 
 const Index = ({}) => {
   const router = useRouter();
@@ -13,13 +14,13 @@ const Index = ({}) => {
       return <></>;
     }
     return (
-      <div>
-        <p>{ data?.note!.text }</p>
+      <Flex h="50vh" flexDirection="column">
+        <Textarea isReadOnly={true} className="note">{ data?.note!.text }</Textarea>
         <button onClick={async () => {
           await deleteNote({ id });
           router.push('/notes');
         }}>Delete</button>
-      </div>
+      </Flex>
     );
   } else {
     return <p>Loading...</p>;

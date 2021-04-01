@@ -99,11 +99,6 @@ export type User = {
   modifiedAt: Scalars['Float'];
 };
 
-export type RegularNoteFragment = (
-  { __typename?: 'Note' }
-  & Pick<Note, 'id' | 'text'>
-);
-
 export type RegularUserFragment = (
   { __typename?: 'User' }
   & Pick<User, 'id' | 'username'>
@@ -118,7 +113,7 @@ export type CreateNoteMutation = (
   { __typename?: 'Mutation' }
   & { createNote: (
     { __typename?: 'Note' }
-    & RegularNoteFragment
+    & Pick<Note, 'id'>
   ) }
 );
 
@@ -198,7 +193,7 @@ export type NoteQuery = (
   { __typename?: 'Query' }
   & { note?: Maybe<(
     { __typename?: 'Note' }
-    & RegularNoteFragment
+    & Pick<Note, 'id' | 'text' | 'modifiedAt'>
   )> }
 );
 
@@ -209,16 +204,10 @@ export type NotesQuery = (
   { __typename?: 'Query' }
   & { notes: Array<(
     { __typename?: 'Note' }
-    & RegularNoteFragment
+    & Pick<Note, 'id' | 'text'>
   )> }
 );
 
-export const RegularNoteFragmentDoc = gql`
-    fragment RegularNote on Note {
-  id
-  text
-}
-    `;
 export const RegularUserFragmentDoc = gql`
     fragment RegularUser on User {
   id
@@ -228,10 +217,10 @@ export const RegularUserFragmentDoc = gql`
 export const CreateNoteDocument = gql`
     mutation CreateNote($text: String!) {
   createNote(text: $text) {
-    ...RegularNote
+    id
   }
 }
-    ${RegularNoteFragmentDoc}`;
+    `;
 
 export function useCreateNoteMutation() {
   return Urql.useMutation<CreateNoteMutation, CreateNoteMutationVariables>(CreateNoteDocument);
@@ -299,10 +288,12 @@ export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'q
 export const NoteDocument = gql`
     query Note($id: String!) {
   note(id: $id) {
-    ...RegularNote
+    id
+    text
+    modifiedAt
   }
 }
-    ${RegularNoteFragmentDoc}`;
+    `;
 
 export function useNoteQuery(options: Omit<Urql.UseQueryArgs<NoteQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<NoteQuery>({ query: NoteDocument, ...options });
@@ -310,10 +301,11 @@ export function useNoteQuery(options: Omit<Urql.UseQueryArgs<NoteQueryVariables>
 export const NotesDocument = gql`
     query Notes {
   notes {
-    ...RegularNote
+    id
+    text
   }
 }
-    ${RegularNoteFragmentDoc}`;
+    `;
 
 export function useNotesQuery(options: Omit<Urql.UseQueryArgs<NotesQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<NotesQuery>({ query: NotesDocument, ...options });

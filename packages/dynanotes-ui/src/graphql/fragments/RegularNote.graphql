@@ -1,4 +1,0 @@
-fragment RegularNote on Note {
-  id
-  text
-}

@@ -14,6 +14,7 @@ export class NoteResolver {
       throw new ForbiddenError('Forbidden.');
     }
     const notes = await NoteModel.scan().exec();
+    notes.sort((a, b) => b.modifiedAt - a.modifiedAt);
     return notes;
   }
 
