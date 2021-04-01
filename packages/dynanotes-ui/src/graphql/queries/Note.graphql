@@ -1,0 +1,5 @@
+query Note ($id: String!) {
+  note(id: $id) {
+    ...RegularNote
+  }
+}

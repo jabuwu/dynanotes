@@ -4,6 +4,7 @@ import { CORS_ORIGIN, DYNAMODB_ACCESS_KEY, DYNAMODB_LOCAL, DYNAMODB_LOCAL_PORT, 
 import { ContextRequest, createApolloServer } from './apollo';
 import session from 'express-session';
 import AWS from 'aws-sdk';
+import { ui } from './ui';
 const DynamoDBStore = require('connect-dynamodb')(session);
 
 export async function createApp() {
@@ -60,7 +61,9 @@ export async function createApp() {
   });
 
   const apolloServer = await createApolloServer();
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
+
+  app.use(ui);
 
   return app;
 }

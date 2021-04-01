@@ -1,0 +1,5 @@
+ports:
+  - port: 8080
+    onOpen: ignore
+  - port: 4567
+    onOpen: ignore

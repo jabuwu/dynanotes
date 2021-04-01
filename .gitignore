@@ -1,6 +1,4 @@
 node_modules/
-.terraform/
-.env
-dynanotes.zip
 build/
-mydb/
+.terraform/
+dynanotes.zip

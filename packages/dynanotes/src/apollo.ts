@@ -33,5 +33,11 @@ export async function createApolloServer() {
       req: (<any>req),
       res,
     }),
+    introspection: true,
+    playground: {
+      settings: {
+        ['request.credentials']: 'same-origin',
+      },
+    },
   });
 }
