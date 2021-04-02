@@ -65,6 +65,7 @@ export type Note = {
   text: Scalars['String'];
   createdAt: Scalars['Float'];
   modifiedAt: Scalars['Float'];
+  deletedAt: Scalars['Float'];
 };
 
 export type Query = {
@@ -193,7 +194,7 @@ export type NoteQuery = (
   { __typename?: 'Query' }
   & { note?: Maybe<(
     { __typename?: 'Note' }
-    & Pick<Note, 'id' | 'text' | 'modifiedAt'>
+    & Pick<Note, 'id' | 'text' | 'createdAt' | 'modifiedAt'>
   )> }
 );
 
@@ -290,6 +291,7 @@ export const NoteDocument = gql`
   note(id: $id) {
     id
     text
+    createdAt
     modifiedAt
   }
 }

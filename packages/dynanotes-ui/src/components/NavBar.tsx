@@ -9,13 +9,13 @@ interface NavBarProps {}
 
 export const NavBar: React.FC<NavBarProps> = () => {
   const router = useRouter();
-  if (router.pathname === '/') {
-    return <></>;
-  }
   const [{ fetching: loggingOut }, logout] = useLogoutMutation();
   const [{ data, fetching: fetchingMe }] = useMeQuery();
   let body = <></>;
   let nav = <></>;
+  const doLogout = async () => {
+    await logout();
+  };
   if (!fetchingMe) {
     if (data?.me) {
       body = (
@@ -23,9 +23,7 @@ export const NavBar: React.FC<NavBarProps> = () => {
           <Box mr={2}>{data.me.username}</Box>
           <Button
             isLoading={loggingOut}
-            onClick={async () => {
-              await logout();
-            }}
+            onClick={doLogout}
             variant="link"
           >
             Logout
@@ -35,10 +33,7 @@ export const NavBar: React.FC<NavBarProps> = () => {
       nav = (
         <>
           <NextLink href="/">
-            <Link mr={2}>Take Notes</Link>
-          </NextLink>
-          <NextLink href="/notes">
-            <Link mr={2}>Notes</Link>
+            <Link mr={2}>New Note</Link>
           </NextLink>
         </>
       );
@@ -55,12 +50,15 @@ export const NavBar: React.FC<NavBarProps> = () => {
       );
     }
   }
+  if (router.pathname === '/') {
+    return <></>;
+  }
   return (
     <div>
       <Flex bg="skyblue" p={4}>
+        <Box>{nav}</Box>
         <Box ml={'auto'}>{body}</Box>
       </Flex>
-      { nav }
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { useNotesQuery, useMeQuery } from '../../generated/graphql';
-import { Box, Link, Stack } from '@chakra-ui/layout';
+import { Box, Link, Stack, Heading } from '@chakra-ui/layout';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -25,9 +25,12 @@ const Index = ({}) => {
       );
     }
     return (
-      <Stack spacing={8}>
-        { noteList }
-      </Stack>
+      <>
+        <Heading m={4}>Notes</Heading>
+        <Stack spacing={8}>
+          { noteList }
+        </Stack>
+      </>
     );
   } else {
     return <p>Loading...</p>;

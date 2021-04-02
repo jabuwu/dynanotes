@@ -18,6 +18,9 @@ export class Note extends Document {
 
   @Field(() => Float)
   modifiedAt: number;
+
+  @Field(() => Float)
+  deletedAt: number;
 }
 
 const NoteSchema = new dynamoose.Schema({
@@ -35,6 +38,10 @@ const NoteSchema = new dynamoose.Schema({
   modifiedAt: {
     type: Number,
     default: Date.now,
+  },
+  deletedAt: {
+    type: Number,
+    default: 0,
   },
 });
 export const NoteModel = dynamoose.model<Note>('notes', NoteSchema);

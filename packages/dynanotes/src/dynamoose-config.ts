@@ -7,7 +7,7 @@ dynamoose.model.defaults.set({
   update: DYNAMODB_LOCAL,
   waitForActive: {
     enabled: DYNAMODB_LOCAL,
-  }
+  },
 });
 dynamoose.aws.sdk.config.update({
   accessKeyId: DYNAMODB_ACCESS_KEY,

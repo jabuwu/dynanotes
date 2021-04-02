@@ -2,6 +2,7 @@ query Note ($id: String!) {
   note(id: $id) {
     id
     text
+    createdAt
     modifiedAt
   }
 }

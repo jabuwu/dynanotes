@@ -31,13 +31,18 @@ const Index = ({}) => {
               router.push('/notes');
           }
         }}>
-          {({ isSubmitting, values }) => (
+          {({ isSubmitting, values, submitForm }) => (
             <Form className="flex1">
               <Flex flexDirection="column" flex="1">
                 <Field name="text" m={0}>
                   {({ field, form }: any) => (
                     <FormControl lineHeight={0} className="flex1">
-                      <Textarea {...field} id="text" spellcheck="false" className="note" borderRadius={0} />
+                      <Textarea {...field} id="text" spellCheck="false" className="note" borderRadius={0} onKeyPress={(event) => {
+                        if (event.code === 'Enter' && event.shiftKey) {
+                          submitForm();
+                          event.preventDefault();
+                        }
+                      }} />
                     </FormControl>
                   )}
                 </Field>

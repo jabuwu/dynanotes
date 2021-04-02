@@ -3,6 +3,7 @@ import { Note, NoteModel } from '../entities/Note';
 import { v4 } from 'uuid';
 import { Context } from '../apollo';
 import { ForbiddenError } from 'apollo-server-errors';
+import { applyDefaults } from '../applyDefaults';
 
 @Resolver()
 export class NoteResolver {
@@ -13,7 +14,11 @@ export class NoteResolver {
     if (!req.user) {
       throw new ForbiddenError('Forbidden.');
     }
-    const notes = await NoteModel.scan().exec();
+    let notes = await NoteModel.scan().exec();
+    for (const note of notes) {
+      applyDefaults(note, NoteModel);
+    }
+    notes = notes.filter(note => note.deletedAt === 0) as any;
     notes.sort((a, b) => b.modifiedAt - a.modifiedAt);
     return notes;
   }
@@ -27,6 +32,10 @@ export class NoteResolver {
       throw new ForbiddenError('Forbidden.');
     }
     const note = await NoteModel.get({ id });
+    applyDefaults(note, NoteModel);
+    if (note.deletedAt !== 0) {
+      return null;
+    }
     return note;
   }
 
@@ -38,7 +47,8 @@ export class NoteResolver {
     if (!req.user) {
       throw new ForbiddenError('Forbidden.');
     }
-    const note = new NoteModel({id: v4(), text});
+    const now = Date.now();
+    const note = new NoteModel({id: v4(), text, createdAt: now, modifiedAt: now});
     await note.save();
     return note;
   }
@@ -54,6 +64,10 @@ export class NoteResolver {
     }
     const note = await NoteModel.get({ id });
     if (!note) {
+      return null;
+    }
+    applyDefaults(note, NoteModel);
+    if (note.deletedAt !== 0) {
       return null;
     }
     note.text = text;
@@ -74,7 +88,13 @@ export class NoteResolver {
     if (!note) {
       return false;
     }
-    await note.delete();
-    return true;
+    applyDefaults(note, NoteModel);
+    if (note.deletedAt === 0) {
+      note.deletedAt = Date.now();
+      await note.save();
+      return true;
+    } else {
+      return false;
+    }
   }
 }
