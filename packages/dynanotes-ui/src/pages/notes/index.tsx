@@ -1,9 +1,10 @@
-import { useNotesQuery, useMeQuery } from '../../generated/graphql';
+import { useNotesQuery, useMeQuery, useNoteAddedSubscription } from '../../generated/graphql';
 import { Box, Link, Stack, Heading } from '@chakra-ui/layout';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 
 const Index = ({}) => {
+  useNoteAddedSubscription();
   const [{ data, fetching }] = useNotesQuery();
   const [{ data: me, fetching: fetchingMe }] = useMeQuery();
   const router = useRouter();

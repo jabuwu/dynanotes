@@ -24,11 +24,12 @@ export class Context {
 }
 
 export async function createApolloServer() {
-  return new ApolloServer({
-    schema: await buildSchema({
-      resolvers: [NoteResolver,UserResolver],
-      validate: false,
-    }),
+  const schema = await buildSchema({
+    resolvers: [NoteResolver,UserResolver],
+    validate: false,
+  });
+  const apolloServer = new ApolloServer({
+    schema,
     context: ({ req, res }): Context => ({
       req: (<any>req),
       res,
@@ -40,4 +41,5 @@ export async function createApolloServer() {
       },
     },
   });
+  return { apolloServer, schema };
 }

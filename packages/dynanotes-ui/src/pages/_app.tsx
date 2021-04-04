@@ -1,6 +1,6 @@
 import '../../styles/style.css';
 import { ChakraProvider, ColorModeProvider } from '@chakra-ui/react';
-import { createClient, dedupExchange, fetchExchange, Provider } from 'urql';
+import { createClient, dedupExchange, fetchExchange, Provider, subscriptionExchange } from 'urql';
 import { cacheExchange, Cache, QueryInput } from '@urql/exchange-graphcache';
 import theme from '../theme';
 import { NavBar } from '../components/NavBar';
@@ -12,7 +12,11 @@ import {
   RegisterMutation,
   NoteQuery,
   NotesQuery,
+  NoteAddedSubscription,
+  NotesDocument,
 } from '../generated/graphql';
+import { SubscriptionClient } from 'subscriptions-transport-ws';
+import ws from 'ws';
 
 function betterUpdateQuery<Result, Query>(
   cache: Cache,
@@ -22,6 +26,9 @@ function betterUpdateQuery<Result, Query>(
 ) {
   return cache.updateQuery(qi, (data) => fn(result, data as any) as any);
 }
+
+const subscriptionClient = new SubscriptionClient(process.env.NEXT_PUBLIC_GRAPHQL_WS || 'wss://localhost/graphql', { reconnect: true }, typeof window == 'undefined' ? ws : undefined);
+
 
 const client = createClient({
   url: process.env.NEXT_PUBLIC_GRAPHQL || '/graphql',
@@ -91,9 +98,27 @@ const client = createClient({
             cache.invalidate('Query', 'notes', { id: args[0].id! });
           },
         },
+        Subscription: {
+          noteAdded: (...args) => {
+            betterUpdateQuery<NoteAddedSubscription, NotesQuery>(
+              args[2],
+              { query: NotesDocument },
+              args[0],
+              (result, query) => {
+                query.notes = [result.noteAdded, ...query.notes];
+                return query;
+              },
+            );
+          },
+        },
       },
     }),
     fetchExchange,
+    subscriptionExchange({
+      forwardSubscription(operation) {
+        return subscriptionClient.request(operation);
+      },
+    }),
   ],
 });
 

@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import './dynamoose-config';
 import { DYNAMODB_LOCAL, DYNAMODB_LOCAL_PORT, PORT } from './env';
 import { createApp } from './app';
+import { createServer } from 'http';
 
 (async() => {
   if (DYNAMODB_LOCAL) {
@@ -17,8 +18,11 @@ import { createApp } from './app';
     }));
   }
 
-  const app = await createApp();
-  app.listen(PORT, () => {
+
+  const { app, apolloServer } = await createApp();
+  const server = createServer(app);
+  apolloServer.installSubscriptionHandlers(server);
+  server.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
   });
 })();

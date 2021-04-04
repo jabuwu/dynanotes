@@ -60,10 +60,10 @@ export async function createApp() {
     next();
   });
 
-  const apolloServer = await createApolloServer();
+  const { apolloServer } = await createApolloServer();
   apolloServer.applyMiddleware({ app, cors: false });
 
   app.use(ui);
 
-  return app;
+  return { app, apolloServer };
 }

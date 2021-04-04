@@ -1,9 +1,13 @@
-import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
+import { Arg, Ctx, Mutation, Query, Resolver, Subscription, Root, Publisher, PubSub } from 'type-graphql';
 import { Note, NoteModel } from '../entities/Note';
 import { v4 } from 'uuid';
 import { Context } from '../apollo';
 import { ForbiddenError } from 'apollo-server-errors';
 import { applyDefaults } from '../applyDefaults';
+
+class Payload<T> {
+  message: T;
+}
 
 @Resolver()
 export class NoteResolver {
@@ -43,6 +47,7 @@ export class NoteResolver {
   async createNote(
     @Ctx() { req }: Context,
     @Arg('text') text: string,
+    @PubSub('noteAdded') publish: Publisher<Payload<Note>>,
   ): Promise<Note> {
     if (!req.user) {
       throw new ForbiddenError('Forbidden.');
@@ -50,6 +55,7 @@ export class NoteResolver {
     const now = Date.now();
     const note = new NoteModel({id: v4(), text, createdAt: now, modifiedAt: now});
     await note.save();
+    await publish({ message: note });
     return note;
   }
 
@@ -96,5 +102,12 @@ export class NoteResolver {
     } else {
       return false;
     }
+  }
+
+  @Subscription({ topics: ['noteAdded'] })
+  noteAdded(
+    @Root() payload: Payload<Note>
+  ): Note {
+    return payload.message;
   }
 }

@@ -92,6 +92,11 @@ export type RegisterResponseError = {
   error: Scalars['String'];
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  noteAdded: Note;
+};
+
 export type User = {
   __typename?: 'User';
   id: Scalars['String'];
@@ -209,6 +214,17 @@ export type NotesQuery = (
   )> }
 );
 
+export type NoteAddedSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type NoteAddedSubscription = (
+  { __typename?: 'Subscription' }
+  & { noteAdded: (
+    { __typename?: 'Note' }
+    & Pick<Note, 'id' | 'text'>
+  ) }
+);
+
 export const RegularUserFragmentDoc = gql`
     fragment RegularUser on User {
   id
@@ -311,4 +327,16 @@ export const NotesDocument = gql`
 
 export function useNotesQuery(options: Omit<Urql.UseQueryArgs<NotesQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<NotesQuery>({ query: NotesDocument, ...options });
+};
+export const NoteAddedDocument = gql`
+    subscription NoteAdded {
+  noteAdded {
+    id
+    text
+  }
+}
+    `;
+
+export function useNoteAddedSubscription<TData = NoteAddedSubscription>(options: Omit<Urql.UseSubscriptionArgs<NoteAddedSubscriptionVariables>, 'query'> = {}, handler?: Urql.SubscriptionHandler<NoteAddedSubscription, TData>) {
+  return Urql.useSubscription<NoteAddedSubscription, TData, NoteAddedSubscriptionVariables>({ query: NoteAddedDocument, ...options }, handler);
 };
